@@ -6,6 +6,7 @@ system("title " + "Rain's Ubisoft Account Tool")
 ticketv1 = ""
 sessionid = ""
 upname = ""
+profileid = ""
 
 def parse_response(response):
     try:
@@ -22,14 +23,68 @@ def generate_random_username():
     return "RainTM.YTv" + generate_random_number() ## replace with whatever random username you want
 
 def generate_random_email():
-    return "fdkalv+" + generate_random_number() + "@gmail.com" ## replace with whatever email you want to own the account
+    return "rain0x06+" + generate_random_number() + "@ubisoft.org" ## replace with whatever email you want to own the account
 
 def b64(message):
     message_bytes = message.encode('ascii')
     base64_bytes = base64.b64encode(message_bytes)
     base64_message = base64_bytes.decode('ascii')
     return base64_message
+    
+def add_trackmania(ticket, profileid):
+    os.system("cls")
+    if not ticket:
+        print("Invalid ticket. Trackmania cannot be added.")
+        return
 
+    url = f"https://beta.ubi.com/api/v1/events/trackmaniafree/players/{profileid}"
+    headers = {
+        "Ubi-Ticket": ticket,
+        "Ubi-AppId": "68eb79cf-8e6c-4861-bdb7-c3f5ee2780bc",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36",
+        "Content-Type": "application/json"
+    }
+    data = {}
+    
+    try:
+        resp = requests.post(url, headers=headers, json=data)
+        resp.raise_for_status()
+        response_data = resp.json()
+        print("Trackmania has been added successfully to the account.")
+        print("\nResponse:", response_data)
+        os.system("pause")
+    except requests.RequestException as e:
+        print(f"An error occurred while adding Trackmania: {e}")
+        print(f"Is Trackmania already on the account?")
+        os.system("pause")
+
+def add_r6freeweekend(ticket, profileid):
+    os.system("cls")
+    if not ticket:
+        print("Invalid ticket. Rainbow Six (Free Weekend Edition) cannot be added.")
+        return
+
+    url = f"https://beta.ubi.com/api/v1/events/rainbow6freeweekend/players/{profileid}"
+    headers = {
+        "Ubi-Ticket": ticket,
+        "Ubi-AppId": "68eb79cf-8e6c-4861-bdb7-c3f5ee2780bc",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36",
+        "Content-Type": "application/json"
+    }
+    data = {}
+    
+    try:
+        resp = requests.post(url, headers=headers, json=data)
+        resp.raise_for_status()
+        response_data = resp.json()
+        print("Rainbow Six (Free Weekend Edition) has been added successfully to the account.")
+        print("\nResponse:", response_data)
+        os.system("pause")
+    except requests.RequestException as e:
+        print(f"An error occurred while adding Rainbow Six (Free Weekend Edition): {e}")
+        print(f"Is Rainbow Six (Free Weekend Edition) already on the account?")
+        os.system("pause")
+        
 def create_account(email, password, username):
     os.system("cls")
     post_url = "https://public-ubiservices.ubi.com/v3/users/validatecreation"
@@ -82,8 +137,8 @@ def create_account(email, password, username):
     print("Email:", email)
     print("Password:", password)
     
-    with open("generated_accounts.txt", "a") as file:
-        file.write(generated_account_info + "\n")
+    with open("generated_accounts.txt", "a") as file: 
+        file.write(generated_account_info + "\n") # log accs so i dont forget lol
     
     print("\nAccount information written to file, copy if needed.")
     
@@ -100,6 +155,7 @@ def create_account(email, password, username):
     
 
 def login_account(email, password):
+    
     os.system("cls")
 
     url = "https://public-ubiservices.ubi.com/v3/profiles/sessions"
@@ -117,6 +173,7 @@ def login_account(email, password):
         ticketv1 = data['ticket']
         sessionid = data['sessionId']
         upname = data['nameOnPlatform']
+        profileid = data['profileId']
     except Exception:
         print("There may have been an error in your login, please relaunch the program and try again.\nOR you have been rate-limited, please wait ~5 minutes and try again.")
         return
@@ -130,7 +187,20 @@ def login_account(email, password):
         print(f"Logged into account with username \033[1;36;40m{upname}\033[0;37;40m\n")
         time.sleep(1)
         print(data)
-        os.system("pause")
+    
+    print("\nChoose an option:")
+    print("1. Add Trackmania to account")
+    print("2. Add Rainbow Six (Free Weekend) to account")
+    print("3. Go back to main menu")
+
+    choice = input("\nChoice: ")
+
+    if choice == '1':
+        add_trackmania(ticketv1, profileid) # Trackmania request requires ticket so acc needs to post to sessions first
+    elif choice == '2':
+        add_r6freeweekend(ticketv1, profileid) # same thing as tm
+    else:
+        os.system("cls")
 
 if __name__ == "__main__":
     while True:
@@ -160,6 +230,7 @@ if __name__ == "__main__":
             create_account(email, password, username)
         elif choice == '2':
             # login to existing acc
+            os.system("cls")
             email = input("Enter your Ubisoft Email: ")
             password = input("Enter your Ubisoft Password: ")
             login_account(email, password)
